@@ -1,44 +1,47 @@
-import streamlit as st
 from openai import OpenAI
-import os
+import streamlit as st
 
-client = OpenAI(api_key= os.getenv("API_KEY"))
+context="""Your role is to support new mothers' mental wellness with a warm, nurturing, and reassuring personality. Use British English, maintaining a friendly, supportive, and professional tone.
 
-st.title("UCL Chat project")
+Start by greeting the user warmly and stating your purpose: "Hello! I'm here to support you with your mental wellness as you navigate motherhood. How can I assist you today?"
 
-def get_response(input):
-    response = client.chat.completions.create(
-    model="gpt-4o",
-    messages=[
-        {
-        "role": "system",
-        "content": [
-            {
-            "type": "text",
-            "text": "Your role is to support new mothers' mental wellness with a warm, nurturing, and reassuring personality. Use British English, maintaining a friendly, supportive, and professional tone.\n\nStart by greeting the user warmly and stating your purpose: \"Hello! I'm here to support you with your mental wellness as you navigate motherhood. How can I assist you today?\"\n\nGather information by asking open-ended, empathetic questions about her feelings and experiences: \"How have you been feeling since the baby arrived?\" Validate her responses to build rapport.\n\nIntroduce wellness activities by explaining benefits and guiding step-by-step with examples: \"Let's try a mindfulness exercise. Find a quiet spot, sit comfortably, and focus on your breathing. Inhale slowly through your nose, hold, and exhale through your mouth.\"\n\nAfter activities, ask how she feels and summarize helpful strategies: \"How do you feel after the exercise?\" Suggest alternatives if needed based on her feedback.\n\nIf conversations go off-topic, gently redirect to wellness: \"I understand this is important. Let's focus on your mental wellness and how I can support you today.\""
-            }
+Gather information by asking open-ended, empathetic questions about her feelings and experiences: "How have you been feeling since the baby arrived?" Validate her responses to build rapport.
+
+Introduce wellness activities by explaining benefits and guiding step-by-step with examples: "Let's try a mindfulness exercise. Find a quiet spot, sit comfortably, and focus on your breathing. Inhale slowly through your nose, hold, and exhale through your mouth."
+
+After activities, ask how she feels and summarize helpful strategies: "How do you feel after the exercise?" Suggest alternatives if needed based on her feedback.
+
+If conversations go off-topic, gently redirect to wellness: "I understand this is important. Let's focus on your mental wellness and how I can support you today."""
+
+st.title("ChatGPT-like clone")
+
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+
+if "openai_model" not in st.session_state:
+    st.session_state["openai_model"] = "gpt-3.5-turbo"
+
+if "messages" not in st.session_state:
+    st.session_state.messages = []
+
+for message in st.session_state.messages:
+    with st.chat_message(message["role"]):
+        st.markdown(message["content"])
+
+if prompt := st.chat_input("What is up?"):
+    st.session_state.messages.append({"role": "user", "content": prompt})
+    with st.chat_message("user"):
+        st.markdown(prompt)
+
+    with st.chat_message("assistant"):
+        messages=[
+            {"role": m["role"], "content": m["content"]}
+            for m in st.session_state.messages
         ]
-        },
-        {
-        "role": "user",
-        "content": [
-            {
-            "type": "text",
-            "text": input
-            }
-        ],
-        }
-    ],
-    temperature=1,
-    max_tokens=256,
-    top_p=1,
-    frequency_penalty=0,
-    presence_penalty=0
-    )
-    return response.choices[0].message.content
-
-user_input = st.text_input("You: ", "Good Morning")
-
-if st.button("Send"):
-    response = get_response(user_input)
-    st.text_area("GPT-4o:", value=response, height=200)
+        messages.insert(0, {"role": "system", "content": context})
+        stream = client.chat.completions.create(
+            model=st.session_state["openai_model"],
+            messages=messages,
+            stream=True,
+        )
+        response = st.write_stream(stream)
+    st.session_state.messages.append({"role": "assistant", "content": response})
