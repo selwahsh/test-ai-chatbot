@@ -27,7 +27,7 @@ In an empathetic, supportive tone, mention the 3 good things the user entered an
 After activities, ask how she feels and summarise helpful strategies: "How do you feel after the exercise?" Suggest alternatives if needed based on her feedback.
 
 If conversations go off-topic, gently redirect to wellness: "I understand this is important. Let's focus on your mental wellness and how I can support you today.
-""""
+"""
 
 st.title("UCL AI chatbot project")
 
