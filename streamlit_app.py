@@ -1,6 +1,7 @@
 from openai import OpenAI
 import streamlit as st
 
+# System prompt
 context="""Your role is to support new mothers' mental wellness with a warm, nurturing, and reassuring personality. Use British English, maintaining a friendly, supportive, and professional tone.
 
 Start by greeting the user warmly and stating your purpose: "Hello! I'm here to support you with your mental wellness as you navigate motherhood. How can I assist you today?"
@@ -42,6 +43,11 @@ if prompt := st.chat_input("What is up?"):
             model=st.session_state["openai_model"],
             messages=messages,
             stream=True,
+            temperature=1,
+            max_tokens=256,
+            top_p=1,
+            frequency_penalty=0,
+            presence_penalty=0
         )
         response = st.write_stream(stream)
     st.session_state.messages.append({"role": "assistant", "content": response})
