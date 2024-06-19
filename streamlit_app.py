@@ -13,12 +13,12 @@ After activities, ask how she feels and summarize helpful strategies: "How do yo
 
 If conversations go off-topic, gently redirect to wellness: "I understand this is important. Let's focus on your mental wellness and how I can support you today."""
 
-st.title("ChatGPT-like clone")
+st.title("UCL AI chatbot project")
 
 client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
 
 if "openai_model" not in st.session_state:
-    st.session_state["openai_model"] = "gpt-3.5-turbo"
+    st.session_state["openai_model"] = "gpt-4o"
 
 if "messages" not in st.session_state:
     st.session_state.messages = []
