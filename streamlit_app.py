@@ -1,6 +1,10 @@
 from openai import OpenAI
 import streamlit as st
 
+client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+
+file_name="participant-test.txt"
+
 # System prompt
 context=""" Your role is to support Adham's mental wellness with a warm, nurturing, and reassuring personality. Use Egyptian Arabic, maintaining a friendly, supportive, and professional tone.
 Adham is the father of one 5-year-old girl.
@@ -28,9 +32,8 @@ After activities, ask how he feels and summarises helpful strategies: "How do yo
 If conversations go off-topic, gently redirect to wellness: "I understand this is important. Let's focus on your mental wellness and how I can support you today."
 """
 
-st.title("UCL AI chatbot project")
 
-client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
+st.title("UCL AI chatbot project")
 
 if "openai_model" not in st.session_state:
     st.session_state["openai_model"] = "gpt-4o"
@@ -65,3 +68,5 @@ if prompt := st.chat_input("Hi Sarah, how are you feeling today?"):
         )
         response = st.write_stream(stream)
     st.session_state.messages.append({"role": "assistant", "content": response})
+
+st.download_button("Download", str(st.session_state.messages),  file_name=file_name)
