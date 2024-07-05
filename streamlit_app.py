@@ -71,5 +71,6 @@ if prompt := st.chat_input("Hi Sarah, how are you feeling today?"):
 
 formatted_output = ''
 for message in st.session_state.messages:
-    formatted_output += f'{message["role"]}: "{message["content"]}"\n\n'
+    role = '🙂' if message['role'] == 'user' else '🤖'
+    formatted_output += f'{role}: "{message["content"]}"\n\n'
 st.download_button("Download", formatted_output,  file_name=file_name)
